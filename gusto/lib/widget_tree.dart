@@ -1,6 +1,6 @@
 import 'package:gusto/auth.dart';
-import 'package:gusto/pages/home_page.dart';
-import 'package:gusto/pages/login_register_page.dart';
+import 'package:gusto/pages/authentication/auth_page.dart';
+import 'package:gusto/screens.dart';
 import 'package:flutter/material.dart';
 
 class WidgetTree extends StatefulWidget {
@@ -16,10 +16,14 @@ class _WidgetTreeState extends State<WidgetTree> {
     return StreamBuilder(
       stream: Auth().authStateChanges,
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return HomePage();
+        if (snapshot.connectionState == ConnectionState.waiting){
+          return const Center(child: CircularProgressIndicator());
+        }else if (snapshot.hasError){
+          return const Center( child: Text('Something went wrong!'));
+        } else if (snapshot.hasData) {
+          return const Screens();
         } else {
-          return const LoginPage();
+          return const AuthPage();
         }
       },
     );
