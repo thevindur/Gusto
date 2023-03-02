@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.gusto">
    <application
-        android:label="gusto"
+        android:label="Gusto"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
