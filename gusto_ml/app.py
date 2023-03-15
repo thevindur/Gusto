@@ -1,29 +1,54 @@
 import pandas as pd
+import numpy as np
+import json
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from flask import Flask, request, jsonify
 
-# Load the dataset containing ingredients and recipes
-df = pd.read_csv("recipes.csv")
+# Load the dataset
+dataset = pd.read_csv('Gusto Dataset - Cleaned.csv')
 
-# Pre-process the ingredients and recipes
-tfidf = TfidfVectorizer(stop_words="english")
-df["ingredients_text"] = df["ingredients"].apply(lambda x: " ".join(x))
-ingredients_matrix = tfidf.fit_transform(df["ingredients_text"])
+# Preprocess the dataset
+dataset["text"] = dataset["Title"] + " " + dataset["Instructions"] + " " + dataset["Cleaned_Ingredients"]
 
-def generate_recipe(ingredients):
-    # Convert the input ingredients into a vector
-    input_vector = tfidf.transform([" ".join(ingredients)])
+# Vectorize the text column using TF-IDF vectorizer
+vectorizer = TfidfVectorizer(stop_words="english")
+x = vectorizer.fit_transform(dataset['text'].apply(lambda x: np.str_(x)))
 
-    # Compute the cosine similarity between the input ingredients and all recipes
-    cosine_similarities = cosine_similarity(input_vector, ingredients_matrix).flatten()
+# Create a Flask app
+app = Flask(__name__)
 
-    # Find the index of the recipe with the highest cosine similarity
-    index = cosine_similarities.argmax()
+# Define an endpoint for recipe search
+@app.route('/recipes', methods=['POST'])
+def search_recipes():
+    # Get user input from the request body in JSON format
+    user_input = request.get_json()
+    if user_input is None or "ingredients" not in user_input:
+        return jsonify({"error": "Invalid input. Please provide a JSON object with 'ingredients' array."}), 400
+    
+    # Vectorize the user input
+    user_input_text = " ".join(user_input["ingredients"]).lower()
+    user_input_matrix = vectorizer.transform([user_input_text])
+    
+    # Calculate cosine similarity between user input and all recipes in the dataset
+    similarity_scores = cosine_similarity(user_input_matrix, x).flatten()
+    
+    # Get the indices of top 10 most similar recipes
+    top_indices = np.argsort(similarity_scores)[-10:][::-1]
+    
+    # Generate recipe output in JSON format
+    recipe_output = []
+    for index in top_indices:
+        recipe = {}
+        recipe["title"] = dataset.loc[index, "Title"]
+        recipe['ingredients'] = dataset.loc[index, 'Cleaned_Ingredients'].split(',')
+        recipe['instructions'] = dataset.loc[index, 'Instructions'].split('.')
+        recipe['image_name'] = dataset.loc[index, 'Image_Name']
+        recipe_output.append(recipe)
+    
+    # Return recipe output in JSON format
+    return jsonify(recipe_output)
 
-    # Return the recipe with the highest cosine similarity
-    return df.iloc[index]["recipe"]
 
-# Example usage
-ingredients = ["chicken", "tomatoes", "olive oil"]
-recipe = generate_recipe(ingredients)
-print(recipe)
+if __name__ == '__main__':
+    app.run(host='127.0.0.1', port=8001, debug=True)
