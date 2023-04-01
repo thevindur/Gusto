@@ -18,6 +18,7 @@ x = vectorizer.fit_transform(dataset['text'].apply(lambda x: np.str_(x)))
 # Create a Flask app
 app = Flask(__name__)
 
+
 # Define an endpoint for recipe search
 @app.route('/recipes', methods=['POST'])
 def search_recipes():
@@ -33,8 +34,8 @@ def search_recipes():
     # Calculate cosine similarity between user input and all recipes in the dataset
     similarity_scores = cosine_similarity(user_input_matrix, x).flatten()
     
-    # Get the indices of top 10 most similar recipes
-    top_indices = np.argsort(similarity_scores)[-10:][::-1]
+    # Get the indices of top 25 most similar recipes
+    top_indices = np.argsort(similarity_scores)[-25:][::-1]
     
     # Generate recipe output in JSON format
     recipe_output = []
@@ -48,6 +49,26 @@ def search_recipes():
     
     # Return recipe output in JSON format
     return jsonify(recipe_output)
+
+
+# Define an endpoint for getting a specific recipe by title
+@app.route('/getRecipe/<string:title>', methods=['GET'])
+def get_recipe(title):
+    # Find the index of the recipe with the given title
+    try:
+        index = dataset.index[dataset['Title'] == title].tolist()[0]
+    except:
+        return jsonify({"error": f"No recipe found with title '{title}'."}), 404
+    
+    # Generate recipe output in JSON format
+    recipe = {}
+    recipe["title"] = dataset.loc[index, "Title"]
+    recipe['ingredients'] = dataset.loc[index, 'Cleaned_Ingredients'].split(',')
+    recipe['instructions'] = dataset.loc[index, 'Instructions'].split('.')
+    recipe['image_name'] = dataset.loc[index, 'Image_Name']
+    
+    # Return recipe output in JSON format
+    return jsonify(recipe)
 
 
 if __name__ == '__main__':
