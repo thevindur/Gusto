@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gusto/pages/home.dart';
-import 'package:gusto/pages/recipe_generation.dart';
+import 'package:gusto/pages/recipeGeneration/recipeMain.dart';
 import 'package:gusto/pages/scan.dart';
 import 'package:gusto/pages/profile.dart';
 
@@ -14,9 +14,9 @@ class Screens extends StatefulWidget {
 class _ScreensState extends State<Screens> {
   int index = 0;
   final screens = [
-    Home(),
-    RecipeGeneration(),
-    Scan(),
+    const Home(),
+    RecipeMain(),
+    const Scan(),
     Profile(),
   ];
 

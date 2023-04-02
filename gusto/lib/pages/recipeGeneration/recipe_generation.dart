@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:gusto/pages/recipe_detail_page.dart';
+import 'package:gusto/pages/recipeGeneration/recipe_detail_page.dart';
 import 'package:http/http.dart' as http;
-import '../models/content_model.dart';
+import '../../models/content_model.dart';
 
 class RecipeGeneration extends StatefulWidget {
-  const RecipeGeneration({Key? key}) : super(key: key);
+  final List<String> inputValues;
+
+  const RecipeGeneration(this.inputValues, {Key? key}) : super(key: key);
 
   @override
   State<RecipeGeneration> createState() => _RecipeGenerationState();
@@ -19,11 +21,14 @@ class _RecipeGenerationState extends State<RecipeGeneration> {
   List<ContentModel> content = [];
 
   Future<void> getRecipes() async {
+    final ingredients = widget.inputValues.length > 1
+        ? widget.inputValues
+        : [widget.inputValues[0], ''];
     try {
       var url = 'http://10.0.2.2:8001/recipes';
 
       Map data = {
-        "ingredients": ["chicken", "rice"]
+        "ingredients": ingredients,
       };
 
       // encode Map to JSON
@@ -33,9 +38,6 @@ class _RecipeGenerationState extends State<RecipeGeneration> {
           headers: {"Content-Type": "application/json"}, body: body);
 
       if (response.statusCode == 200) {
-        if (kDebugMode) {
-          print(response.body);
-        }
         var jsonData = jsonDecode(response.body) as List<dynamic>;
         content = jsonData.map((item) {
           return ContentModel(
@@ -43,15 +45,6 @@ class _RecipeGenerationState extends State<RecipeGeneration> {
             image_name: item['image_name'],
           );
         }).toList();
-
-        for (var item in jsonData) {
-          if (kDebugMode) {
-            print('Title: ${item['title']}');
-          }
-          if (kDebugMode) {
-            print('Image Name: ${item['image_name']}');
-          }
-        }
 
         setState(() {}); // Update the state of the widget
       } else {
@@ -67,9 +60,9 @@ class _RecipeGenerationState extends State<RecipeGeneration> {
   }
 
   Future<String> _getImage(String imageName) async {
-    if (kDebugMode) {
-      print('$imageName.jpg');
-    }
+    // if (kDebugMode) {
+    //   print('$imageName.jpg');
+    // }
     final ref = _storage.ref().child('$imageName.jpg');
     return await ref.getDownloadURL().catchError((error) {
       if (kDebugMode) {

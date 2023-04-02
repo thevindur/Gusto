@@ -34,8 +34,8 @@ def search_recipes():
     # Calculate cosine similarity between user input and all recipes in the dataset
     similarity_scores = cosine_similarity(user_input_matrix, x).flatten()
     
-    # Get the indices of top 25 most similar recipes
-    top_indices = np.argsort(similarity_scores)[-25:][::-1]
+    # Get the indices of top 50 most similar recipes
+    top_indices = np.argsort(similarity_scores)[-50:][::-1]
     
     # Generate recipe output in JSON format
     recipe_output = []
