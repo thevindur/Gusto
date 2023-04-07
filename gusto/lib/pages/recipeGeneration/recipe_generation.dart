@@ -86,7 +86,7 @@ class _RecipeGenerationState extends State<RecipeGeneration> {
                 child: CircularProgressIndicator(),
               )
             : Container(
-                padding: const EdgeInsets.fromLTRB(5.0, 60.0, 5.0, 0.0),
+                padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
                 child: GridView.builder(
                   padding: const EdgeInsets.all(8),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -103,7 +103,7 @@ class _RecipeGenerationState extends State<RecipeGeneration> {
                           MaterialPageRoute(
                             builder: (context) => Scaffold(
                               appBar: AppBar(
-                                title: const Text('Generated Recipes'),
+                                title: const Text("Recipe Details"),
                               ),
                               body: RecipeDetailPage(
                               title: content[index].title,

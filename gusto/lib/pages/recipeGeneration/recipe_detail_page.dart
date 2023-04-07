@@ -59,7 +59,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
               child: Column(
                 children: <Widget>[
                   Container(
-                    padding: const EdgeInsets.fromLTRB(5.0, 60.0, 5.0, 0.0),
+                    padding: const EdgeInsets.fromLTRB(5.0, 10.0, 5.0, 0.0),
                     child: Text('${_recipeData['title']}'),
                   ),
                   Container(
