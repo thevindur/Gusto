@@ -101,8 +101,13 @@ class _RecipeGenerationState extends State<RecipeGeneration> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => RecipeDetailPage(
+                            builder: (context) => Scaffold(
+                              appBar: AppBar(
+                                title: const Text('Generated Recipes'),
+                              ),
+                              body: RecipeDetailPage(
                               title: content[index].title,
+                            ),
                             ),
                           ),
                         );
@@ -117,8 +122,10 @@ class _RecipeGenerationState extends State<RecipeGeneration> {
                         ),
                         child: FutureBuilder(
                           future: _getImage(content[index].image_name),
-                          builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                            if (snapshot.connectionState == ConnectionState.done) {
+                          builder: (BuildContext context,
+                              AsyncSnapshot<String?> snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
                               if (snapshot.hasError) {
                                 return Text('Error: ${snapshot.error}');
                               } else {
@@ -145,4 +152,3 @@ class _RecipeGenerationState extends State<RecipeGeneration> {
               ));
   }
 }
-
