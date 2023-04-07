@@ -65,7 +65,7 @@ class _RecipeMainState extends State<RecipeMain> {
                       }
                     });
                   },
-                 isExpanded: true,
+                  isExpanded: true,
                 ),
               ),
               ListView.builder(
@@ -100,7 +100,12 @@ class _RecipeMainState extends State<RecipeMain> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RecipeGeneration(_inputValues),
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: const Text('Generated Recipes'),
+                        ),
+                        body: RecipeGeneration(_inputValues),
+                      ),
                     ),
                   );
                 },

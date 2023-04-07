@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gusto/pages/home.dart';
-import 'package:gusto/pages/recipeGeneration/recipeMain.dart';
-import 'package:gusto/pages/scan.dart';
-import 'package:gusto/pages/profile.dart';
+import 'package:gusto/tab_navigator.dart';
 
 class Screens extends StatefulWidget {
   const Screens({Key? key}) : super(key: key);
@@ -12,53 +9,92 @@ class Screens extends StatefulWidget {
 }
 
 class _ScreensState extends State<Screens> {
-  int index = 0;
-  final screens = [
-    const Home(),
-    RecipeMain(),
-    const Scan(),
-    Profile(),
-  ];
+  String _currentPage = "Home";
+  List<String> pageKeys = ["Home", "Generate", "Scan", "Profile"];
+  final Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
+    "Home": GlobalKey<NavigatorState>(),
+    "Generate": GlobalKey<NavigatorState>(),
+    "Scan": GlobalKey<NavigatorState>(),
+    "Profile": GlobalKey<NavigatorState>(),
+  };
+  int _selectedIndex = 0;
+
+  void _selectTab(String tabItem, int index) {
+    if (tabItem == _currentPage) {
+      _navigatorKeys[tabItem]?.currentState?.popUntil((route) => route.isFirst);
+    } else {
+      setState(() {
+        _currentPage = pageKeys[index];
+        _selectedIndex = index;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: screens[index],
-        backgroundColor: const Color(0xFFFFE9C8),
-        bottomNavigationBar: NavigationBarTheme(
-          data: const NavigationBarThemeData(
-            indicatorColor: Color(0xFFFF8A00),
-            backgroundColor: Color(0xFFFDC36D),
-            labelTextStyle: MaterialStatePropertyAll(
-                TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.w600,
-                )
+    return WillPopScope(
+      onWillPop: () async {
+        final isFirstRouteInCurrentTab =
+            _navigatorKeys[_currentPage]?.currentState?.canPop() != true;
+        if (isFirstRouteInCurrentTab) {
+          if (_currentPage != "Home") {
+            _selectTab("Home", 1);
+
+            return false;
+          }
+        }
+        // let system handle back button if we're on the first route
+        return isFirstRouteInCurrentTab;
+      },
+      child: Scaffold(
+        body: Stack(children: <Widget>[
+          _buildOffstageNavigator("Home"),
+          _buildOffstageNavigator("Generate"),
+          _buildOffstageNavigator("Scan"),
+          _buildOffstageNavigator("Profile"),
+        ]),
+        bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: const Color(0xFFFF8A00),
+          backgroundColor: const Color(0xFFFDC36D),
+          onTap: (int index) {
+            _selectTab(pageKeys[index], index);
+          },
+          currentIndex: _selectedIndex,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: ('Home'),
             ),
-            height: 60.0,
-          ),
-          child: NavigationBar(
-            selectedIndex: index,
-            onDestinationSelected: (index)=>setState(() => this.index = index),
-            destinations: const [
-              NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home),
-                  label: 'Home'),
-              NavigationDestination(
-                  icon: Icon(Icons.food_bank_outlined),
-                  selectedIcon: Icon(Icons.food_bank),
-                  label: 'Recipes'),
-              NavigationDestination(
-                  icon: Icon(Icons.camera_alt_outlined),
-                  selectedIcon: Icon(Icons.camera_alt),
-                  label: 'Scan'),
-              NavigationDestination(
-                  icon: Icon(Icons.person_2_outlined),
-                  selectedIcon: Icon(Icons.person_2),
-                  label: 'Profile'),
-            ],),)
+            BottomNavigationBarItem(
+              icon: Icon(Icons.food_bank_outlined),
+              activeIcon: Icon(Icons.home),
+              label: ('Generate'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.camera_alt_outlined),
+              activeIcon: Icon(Icons.camera_alt),
+              label: ('Scan'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_2_outlined),
+              activeIcon: Icon(Icons.person_2),
+              label: ('Profile'),
+            ),
+          ],
+          type: BottomNavigationBarType.fixed,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOffstageNavigator(String tabItem) {
+    return Offstage(
+      offstage: _currentPage != tabItem,
+      child: TabNavigator(
+        navigatorKey: _navigatorKeys[tabItem]!,
+        tabItem: tabItem,
+      ),
     );
   }
 }
-
