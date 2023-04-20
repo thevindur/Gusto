@@ -33,7 +33,7 @@ class _RecipeMainState extends State<RecipeMain> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 80),
-              const Text('Select the number of ingredients:'),
+              const Text('Select the number of ingredients:', textScaleFactor: 1.2,),
               const SizedBox(height: 10),
               Container(
                 margin: const EdgeInsets.fromLTRB(100.0, 0.0, 100.0, 0),
@@ -49,7 +49,9 @@ class _RecipeMainState extends State<RecipeMain> {
                       .map<DropdownMenuItem<int>>((int value) {
                     return DropdownMenuItem<int>(
                       value: value,
-                      child: Text(value.toString()),
+                      child: Center(
+                        child: Text(value.toString()),
+                      ),
                     );
                   }).toList(),
                   onChanged: (int? value) {
@@ -92,22 +94,30 @@ class _RecipeMainState extends State<RecipeMain> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  for (final item in _inputValues) {
-                    if (kDebugMode) {
-                      print(item);
+                  bool hasEmptyField =
+                      _inputValues.any((element) => element.isEmpty);
+                  if (hasEmptyField) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please fill all fields')),
+                    );
+                  } else {
+                    for (final item in _inputValues) {
+                      if (kDebugMode) {
+                        print(item);
+                      }
                     }
-                  }
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Scaffold(
-                        appBar: AppBar(
-                          title: const Text('Generated Recipes'),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          appBar: AppBar(
+                            title: const Text('Generated Recipes'),
+                          ),
+                          body: RecipeGeneration(_inputValues),
                         ),
-                        body: RecipeGeneration(_inputValues),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 },
                 child: const Text('Generate Recipes'),
               ),

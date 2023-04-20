@@ -88,11 +88,9 @@ class _RecipeGenerationState extends State<RecipeGeneration> {
             : Container(
                 padding: const EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 0.0),
                 child: GridView.builder(
-                  padding: const EdgeInsets.all(8),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
+                    crossAxisSpacing: 10,
                   ),
                   itemCount: content.length,
                   itemBuilder: (BuildContext context, int index) {
