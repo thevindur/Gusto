@@ -40,7 +40,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
   }
 
   Future<String> _getImage(String imageName) async {
-    print('$imageName.jpg');
+    //print('$imageName.jpg');
     final ref = _storage.ref().child('$imageName.jpg');
     return await ref.getDownloadURL().catchError((error) {
       if (kDebugMode) {

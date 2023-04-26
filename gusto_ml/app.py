@@ -41,10 +41,12 @@ def search_recipes():
     recipe_output = []
     for index in top_indices:
         recipe = {}
+        recipe["id"] = dataset.loc[index, "Id"]
         recipe["title"] = dataset.loc[index, "Title"]
         recipe['ingredients'] = dataset.loc[index, 'Cleaned_Ingredients'].split(',')
         recipe['instructions'] = dataset.loc[index, 'Instructions'].split('.')
         recipe['image_name'] = dataset.loc[index, 'Image_Name']
+        recipe['views'] = int(dataset.loc[index, 'Views'])
         recipe_output.append(recipe)
     
     # Return recipe output in JSON format
@@ -60,8 +62,13 @@ def get_recipe(title):
     except:
         return jsonify({"error": f"No recipe found with title '{title}'."}), 404
     
+    # Increase the value of the views column of the recipe
+    dataset.at[index, 'Views'] = int(dataset.loc[index, 'Views']) + 1
+    dataset.to_csv('Gusto Dataset - Cleaned.csv', index=False)
+    
     # Generate recipe output in JSON format
     recipe = {}
+    recipe["id"] = dataset.loc[index, "Id"]
     recipe["title"] = dataset.loc[index, "Title"]
     recipe['ingredients'] = dataset.loc[index, 'Cleaned_Ingredients'].split(',')
     recipe['instructions'] = dataset.loc[index, 'Instructions'].split('.')
@@ -69,6 +76,27 @@ def get_recipe(title):
     
     # Return recipe output in JSON format
     return jsonify(recipe)
+
+
+@app.route('/topRecipes', methods=['GET'])
+def get_top_recipes():
+    # Get the indices of the top 10 recipes with the highest views
+    top_indices = dataset.sort_values(by=['Views'], ascending=False).head(10).index.tolist()
+    
+    # Generate recipe output in JSON format
+    recipe_output = []
+    for index in top_indices:
+        recipe = {}
+        recipe["id"] = dataset.loc[index, "Id"]
+        recipe["title"] = dataset.loc[index, "Title"]
+        recipe['ingredients'] = dataset.loc[index, 'Cleaned_Ingredients'].split(',')
+        recipe['instructions'] = dataset.loc[index, 'Instructions'].split('.')
+        recipe['image_name'] = dataset.loc[index, 'Image_Name']
+        recipe['views'] = int(dataset.loc[index, 'Views'])
+        recipe_output.append(recipe)
+    
+    # Return recipe output in JSON format
+    return jsonify(recipe_output)
 
 
 if __name__ == '__main__':
