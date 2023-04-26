@@ -40,7 +40,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
   }
 
   Future<String> _getImage(String imageName) async {
-    print('$imageName.jpg');
+    //print('$imageName.jpg');
     final ref = _storage.ref().child('$imageName.jpg');
     return await ref.getDownloadURL().catchError((error) {
       if (kDebugMode) {
@@ -56,70 +56,93 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(5.0, 10.0, 5.0, 0.0),
-                    child: Text('${_recipeData['title']}'),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 0.0),
-                    child: FutureBuilder(
-                      future: _getImage(_recipeData['image_name']),
-                      builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            final imageUrl = snapshot.data;
-                            if (imageUrl != null) {
-                              return Center(
-                                child: Image.network(
-                                  imageUrl,
-                                  fit: BoxFit.fill,
-                                  width: double.infinity,
-                                  height: 250,
-                                ),
-                              );
-                            } else {
-                              return const Text('Image not found');
-                            }
-                          }
-                        } else {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 10.0),
-                    child: const Text(
-                      'Ingredients',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                  ),
-                  for (final ingredient in _recipeData['ingredients'])
-                    Container(
-                      padding: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 0.0),
-                      child: Text(ingredient),
-                    ),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 0.0),
-                    child: const Text(
-                      'Instructions',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                  ),
-                  for (final instruction in _recipeData['instructions'])
-                    Container(
-                      padding: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 0.0),
-                      child: Text(instruction),
-                    ),
-                ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.fromLTRB(5.0, 10.0, 5.0, 0.0),
+              child: Text(
+                '${_recipeData['title']}',
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 0.0),
+              child: FutureBuilder(
+                future: _getImage(_recipeData['image_name']),
+                builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      final imageUrl = snapshot.data;
+                      if (imageUrl != null) {
+                        return Center(
+                          child: Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: 250,
+                          ),
+                        );
+                      } else {
+                        return const Text('Image not found');
+                      }
+                    }
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 10.0),
+              child: const Text(
+                'Ingredients',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            for (final ingredient in _recipeData['ingredients'])
+              Container(
+                padding: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 0.0),
+                child: Text(
+                  ingredient,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 5.0),
+              child: const Text(
+                'Instructions',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            for (int i = 0; i < _recipeData['instructions'].length; i++)
+              Container(
+                padding: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 0.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${_recipeData['instructions'][i]}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
