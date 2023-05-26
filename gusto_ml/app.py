@@ -9,7 +9,7 @@ from flask import Flask, request, jsonify
 dataset = pd.read_csv('Gusto Dataset - Cleaned.csv')
 
 # Preprocess the dataset
-dataset["text"] = dataset["Title"] + " " + dataset["Instructions"] + " " + dataset["Cleaned_Ingredients"]
+dataset["text"] = dataset["Title"] + " " + dataset["Cleaned_Ingredients"]
 
 # Vectorize the text column using TF-IDF vectorizer
 vectorizer = TfidfVectorizer(stop_words="english")
