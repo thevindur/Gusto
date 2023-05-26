@@ -138,7 +138,7 @@ class _HomeState extends State<Home> {
           ),
         ),
         const SizedBox(
-          height: 20,
+          height: 50,
         ),
         const Center(
             child: Text("Favourite Recipes",
@@ -148,38 +148,11 @@ class _HomeState extends State<Home> {
               ),)
         ),
         _isLoading
-        ? const Center(child: Text("Your favourite recipes will be displayed here."))
-        : SizedBox(
-    height: 200,
-    child: ListView(
-    scrollDirection: Axis.horizontal,
-    children: [
-    _buildGridTile('Tile 7'),
-    _buildGridTile('Tile 8'),
-    _buildGridTile('Tile 9'),
-    _buildGridTile('Tile 10'),
-    _buildGridTile('Tile 11'),
-    _buildGridTile('Tile 12'),
-    ],
-    ),
-    ),
+        ? const Padding(padding: EdgeInsets.fromLTRB(0.0, 80.0, 0.0, 0.0),child: Text("Your favourite recipes will be displayed here."))
+        : const Text("data")
     ],
     )
     ,
-    );
-  }
-
-  Widget _buildGridTile(String text) {
-    return GridTile(
-      child: Container(
-        color: Colors.grey[300],
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      ),
     );
   }
 }
