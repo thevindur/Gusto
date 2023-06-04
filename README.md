@@ -43,3 +43,5 @@ Gusto is an mobile application for identifying food items and using an algorithm
 
 
 ## Gusto app
+
+![Gusto Output](https://github.com/thevindur/Gusto/assets/66563743/ea1f98ef-b4ac-47f9-8045-d89801a9676f)
